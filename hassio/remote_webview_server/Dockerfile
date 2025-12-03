@@ -7,17 +7,17 @@ RUN apt-get update \
     nodejs npm git jq socat ca-certificates curl \
  && rm -rf /var/lib/apt/lists/*
 
-# Clone source từ repo server của bạn (v1.1.4 đã có login + 2FA nếu bạn push)
+# Clone source từ repo server của bạn (dùng tag mới nhất hoặc v1.1.4)
 RUN git clone https://github.com/minhquanghp86/RemoteWebViewServer.git /app \
  && cd /app \
- && git checkout v1.1.4 \  # Lấy đúng tag release
  && npm ci --only=production
 
 WORKDIR /app
 
-# Copy run.sh nếu có, hoặc tạo đơn giản
-COPY run.sh /run.sh || echo '#!/bin/bash\nnode index.js' > /run.sh
-RUN chmod +x /run.sh
+# Tạo run.sh đơn giản (đã fix lỗi)
+RUN echo '#!/command/with-contenv bash' > /run.sh && \
+    echo 'exec node /app/index.js' >> /run.sh && \
+    chmod +x /run.sh
 
 EXPOSE 8081 18080 9221
 
