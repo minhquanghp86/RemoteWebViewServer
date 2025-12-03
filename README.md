@@ -4,7 +4,7 @@ Trình duyệt không đầu hiển thị các trang web mục tiêu (ví dụ: 
 ![Remote WebView](/images/tiled_preview.png)
 
 
-## tính năng
+## Tính năng
 
 - hiển thị các trang trong môi trường Chromium không giao diện và các luồng diff được tạo thành các ô trên WebSocket.
 - hợp nhất ô với tính năng phát hiện thay đổi để giảm số lượng gói tin và tải CPU
@@ -20,14 +20,14 @@ Trình duyệt không đầu hiển thị các trang web mục tiêu (ví dụ: 
 - Điểm cuối kiểm tra tình trạng hoạt động để điều phối container
 - Tùy chọn truy cập DevTools qua proxy TCP
 
-## Accessing the server’s tab with Chrome D# Truy cập tab máy chủ bằng Chrome DevTools
+## Truy cập tab máy chủ bằng Chrome DevTools
 1. Đảm bảo máy chủ của bạn hiển thị cổng DevTools (CDP) (ví dụ: 9222).
 - Nếu bạn sử dụng container Docker thuần túy, hãy đảm bảo bạn đã cấu hình và khởi động `debug-proxy`
 - Nếu sử dụng tiện ích bổ sung Ha OS, hãy bật `expose_debug_proxy`
 1. Trong Chrome, hãy truy cập chrome://inspect/#devices → Configure… → thêm máy chủ của bạn: hostname_or_ip:9222.
 1. Bạn sẽ thấy trang mà máy chủ đã mở (trang bạn muốn đăng nhập, ví dụ: Home Assistant). Nhấp vào inspect để mở toàn bộ cửa sổ DevTools cho tab đó.
 
-### Thẻ hình ảnh & quản lý phiên bản
+## Thẻ hình ảnh & quản lý phiên bản
 
 - mới nhất — bản phát hành ổn định mới nhất
 - beta — bản tiền phát hành mới nhất (đang phát hành)
