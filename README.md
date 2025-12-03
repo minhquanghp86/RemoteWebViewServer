@@ -1,41 +1,41 @@
 # Remote WebView Server
 
-Headless browser that renders target web pages (e.g., Home Assistant dashboards) and streams them as image tiles over WebSocket to lightweight [clients](https://github.com/strange-v/RemoteWebViewClient) (ESP32 displays). The server supports multiple simultaneous clients, each with its own screen resolution, orientation, and per-device settings.
-
+Trình duyệt không đầu hiển thị các trang web mục tiêu (ví dụ: bảng điều khiển Home Assistant) và truyền phát chúng dưới dạng các ô hình ảnh qua WebSocket đến các trang web nhẹ [clients](https://github.com/strange-v/RemoteWebViewClient) (ESP32 displays). Máy chủ hỗ trợ nhiều máy khách cùng lúc, mỗi máy khách có độ phân giải màn hình, hướng và cài đặt riêng cho từng thiết bị.
 ![Remote WebView](/images/tiled_preview.png)
 
-## Features
 
-- Renders pages in a headless Chromium environment and streams diffs as tiles over WebSocket.
-- Tile merging with change detection to reduce packet count and CPU load
-- Full-frame fallback on cadence/threshold or on demand
-- Configurable tile size, JPEG quality, WS message size, and min frame interval
-- Per-client settings: each connection can supply its own width, height, tileSize, jpegQuality, maxBytesPerMessage, etc.
-- Hot reconfigure: reconnecting with new params reconfigures the device session and triggers a full-frame refresh.
-- Smarter frame gating: throttling + content-hash dedup (skip identical frames)
-- No viewers = no work: frames are ACK’d to keep Chromium streaming, but tiles aren’t encoded/queued when there are no listeners.
-- Touch event bridging (down/move/up) — scrolling supported (no gestures yet)
-- Client-driven navigation: the client can control which page to open.
-- Built-in self-test page to visualize and measure render time
-- Health endpoint for container orchestration
-- Optional DevTools access via TCP proxy
+## tính năng
 
-## Accessing the server’s tab with Chrome DevTools
-1. Make sure your server exposes the DevTools (CDP) port (e.g., 9222).
-   - If you use a pure Docker container, make sure you have configured and started `debug-proxy`
-   - If HA OS addon is used, enable `expose_debug_proxy`
-1. In Chrome, go to chrome://inspect/#devices → Configure… → add your host: hostname_or_ip:9222.
-1. You should see the page the server opened (the one you want to log into, e.g., Home Assistant). Click inspect to open a full DevTools window for that tab.
+- hiển thị các trang trong môi trường Chromium không giao diện và các luồng diff được tạo thành các ô trên WebSocket.
+- hợp nhất ô với tính năng phát hiện thay đổi để giảm số lượng gói tin và tải CPU
+- dự phòng toàn khung hình theo nhịp/ngưỡng hoặc theo yêu cầu
+- kích thước ô, chất lượng JPEG, kích thước tin nhắn WS và khoảng thời gian khung hình tối thiểu có thể cấu hình
+- cài đặt cho từng máy khách: mỗi kết nối có thể cung cấp chiều rộng, chiều cao, Kích thước ô, Chất lượng JPEG, MaxBytesPerMessage, v.v. riêng.
+- Cấu hình lại nóng: kết nối lại với các tham số mới sẽ cấu hình lại phiên thiết bị và kích hoạt làm mới toàn khung hình.
+- Cổng khung thông minh hơn: điều tiết + nội dung băm bị loại bỏ (bỏ qua các khung giống hệt nhau)
+- Không có người xem = không có công việc: các khung được ACK để tiếp tục phát trực tuyến Chromium, nhưng các ô không được mã hóa/xếp hàng khi không có người nghe.
+ - Kết nối sự kiện chạm (xuống/di chuyển/lên) — hỗ trợ cuộn (chưa có cử chỉ)
+- Điều hướng do máy khách điều khiển: máy khách có thể kiểm soát trang nào sẽ mở.
+- Trang tự kiểm tra tích hợp để trực quan hóa và đo thời gian hiển thị
+- Điểm cuối kiểm tra tình trạng hoạt động để điều phối container
+- Tùy chọn truy cập DevTools qua proxy TCP
 
-## Image Tags & Versioning
+## Accessing the server’s tab with Chrome D# Truy cập tab máy chủ bằng Chrome DevTools
+1. Đảm bảo máy chủ của bạn hiển thị cổng DevTools (CDP) (ví dụ: 9222).
+- Nếu bạn sử dụng container Docker thuần túy, hãy đảm bảo bạn đã cấu hình và khởi động `debug-proxy`
+- Nếu sử dụng tiện ích bổ sung Ha OS, hãy bật `expose_debug_proxy`
+1. Trong Chrome, hãy truy cập chrome://inspect/#devices → Configure… → thêm máy chủ của bạn: hostname_or_ip:9222.
+1. Bạn sẽ thấy trang mà máy chủ đã mở (trang bạn muốn đăng nhập, ví dụ: Home Assistant). Nhấp vào inspect để mở toàn bộ cửa sổ DevTools cho tab đó.
 
-- latest — newest stable release
-- beta — newest pre-release (rolling)
-- Semantic versions: X.Y.Z, plus convenience tags X.Y, X on stable releases
+### Thẻ hình ảnh & quản lý phiên bản
 
-You can pin a stable release (`1.4.0`) or track channels (`latest`, `beta`) depending on your deployment strategy.
+- mới nhất — bản phát hành ổn định mới nhất
+- beta — bản tiền phát hành mới nhất (đang phát hành)
+- phiên bản ngữ nghĩa: X.Y.Z, cùng với các thẻ tiện lợi X.Y, X trên các bản phát hành ổn định
 
-## Docker Compose Example
+Bạn có thể ghim một bản phát hành ổn định (`1.4.0`) hoặc theo dõi các kênh (`mới nhất`, `beta`) tùy thuộc vào chiến lược triển khai của bạn.
+
+## Ví dụ về Docker Compose
 
 ```yaml
 services:
