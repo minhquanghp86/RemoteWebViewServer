@@ -1,8 +1,8 @@
 name: "Remote WebView Server"
-version: "1.1.4"
+version: "1.1.3"
 slug: "remote_webview_server"
-description: "Truyền trực tuyến bảng điều khiển HA của bạn hoặc bất kỳ trang web nào tới màn hình dựa trên ESP32 dưới dạng ô thông qua WebSocket."
-url: "https://github.com/minhquanghp86/RemoteWebViewServer/tree/main/hassio/remote_webview_server"
+description: "Streams your HA dashboard or any website to ESP32-based displays as tiles via WebSocket."
+url: "https://github.com/strange-v/RemoteWebViewServer/tree/main/hassio/remote_webview_server"
 arch:
   - amd64
   - aarch64
