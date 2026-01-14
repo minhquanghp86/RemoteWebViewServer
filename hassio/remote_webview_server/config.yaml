@@ -1,8 +1,8 @@
 name: "Remote WebView Server TEST"
 version: "1.2.0-test"
 slug: "remote_webview_server_test"
-description: "Truyền bảng điều khiển HA hoặc bất kỳ trang web nào tới màn hình hiển thị dựa trên ESP32 dưới dạng ô thông qua WebSocket."
-url: "https://github.com/minhquanghp86/RemoteWebViewServer/tree/test"
+description: "Remote WebView Server with Video Streaming (TEST)"
+url: "https://github.com/minhquanghp86/RemoteWebViewServer"
 arch:
   - amd64
   - aarch64
