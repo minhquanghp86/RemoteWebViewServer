@@ -1,0 +1,6 @@
+channel: test
+addons:
+  remote_webview_server_test:
+    repository: https://github.com/minhquanghp86/RemoteWebViewServer
+    target: remote_webview_server
+    image: ghcr.io/minhquanghp86/remote-webview-server-{arch}
