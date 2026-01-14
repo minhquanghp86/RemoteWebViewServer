@@ -26,6 +26,23 @@ export HEALTH_PORT="$(get_opt health_port 18080)"
 export PREFERS_REDUCED_MOTION="$(get_opt prefers_reduced_motion false)"
 
 USER_DATA_DIR_OPT="$(get_opt user_data_dir "/pw-data")"
+# Video streaming config
+export ENABLE_VIDEO="$(get_opt enable_video true)"
+export VIDEO_PORT="8082"
+export VIDEO_FPS="$(get_opt video_fps 10)"
+export VIDEO_QUALITY="$(get_opt video_quality 70)"
+export VIDEO_RESOLUTION="$(get_opt video_resolution "320x240")"
+export VIDEO_CAMERA_ENTITY="$(get_opt video_camera_entity "")"
+
+# Home Assistant connection for video
+export HA_URL="http://supervisor/core"
+# SUPERVISOR_TOKEN đã có sẵn từ Home Assistant
+
+if [ "$ENABLE_VIDEO" = "true" ]; then
+  echo "[remote-webview] Starting video server on :${VIDEO_PORT}"
+  python3 /app/video_server.py &
+  VIDEO_PID=$!
+fi
 if [ "$USER_DATA_DIR_OPT" = "/pw-data" ]; then
   mkdir -p /data/pw-data
   # if not already a symlink, make /pw-data -> /data/pw-data
