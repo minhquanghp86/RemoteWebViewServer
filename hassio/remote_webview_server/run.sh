@@ -66,4 +66,12 @@ fi
 command -v node >/dev/null
 test -f dist/index.js
 
-exec node dist/index.js
+# Start Node.js server
+node dist/index.js &
+NODE_PID=$!
+
+# Wait for any process to exit
+wait -n
+
+# Exit with status of process that exited first
+exit $?
