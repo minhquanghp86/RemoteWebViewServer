@@ -1,3 +1,17 @@
+# Remote WebView Server - Test Branch
+
+## Video Streaming Feature (Testing)
+
+Nhánh này đang test tính năng video streaming từ Home Assistant camera.
+
+### Cấu hình:
+
+```yaml
+enable_video: true
+video_fps: 10
+video_quality: 70
+video_resolution: "320x240"
+video_camera_entity: "camera.front_door"
 # Remote WebView Server
 
 Trình duyệt Headless browser hiển thị các trang web mục tiêu (ví dụ: bảng điều khiển Home Assistant) và truyền phát chúng dưới dạng các ô hình ảnh qua WebSocket đến các trang web nhẹ [clients](https://github.com/minhquanghp86/RemoteWebViewClient) (ESP32 displays). Máy chủ hỗ trợ nhiều máy khách cùng lúc, mỗi máy khách có độ phân giải màn hình, hướng và cài đặt riêng cho từng thiết bị.
