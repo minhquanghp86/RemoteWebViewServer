@@ -18,6 +18,6 @@ WORKDIR /app
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 
-EXPOSE 8081 18080 9221
+EXPOSE 8081 8082 18080 9221
 
 CMD ["/run.sh"]
