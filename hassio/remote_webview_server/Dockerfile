@@ -16,6 +16,7 @@ RUN pip3 install --no-cache-dir \
 
 WORKDIR /app
 COPY run.sh /run.sh
+COPY *.py /app/
 RUN chmod +x /run.sh
 
 EXPOSE 8081 8082 18080 9221
