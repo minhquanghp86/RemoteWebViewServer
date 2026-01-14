@@ -37,6 +37,11 @@ options:
   health_port: 18080
   prefers_reduced_motion: false
   user_data_dir: "/pw-data"
+  enable_video: true
+  video_fps: 10
+  video_quality: 70
+  video_resolution: "320x240"
+  video_camera_entity: ""
 
 schema:
   tile_size: int
@@ -54,3 +59,8 @@ schema:
   health_port: int
   prefers_reduced_motion: bool
   user_data_dir: str
+  enable_video: bool
+  video_fps: int(5,30)
+  video_quality: int(10,100)
+  video_resolution: str
+  video_camera_entity: str
