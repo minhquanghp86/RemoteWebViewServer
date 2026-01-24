@@ -22,6 +22,7 @@ map:
     read_only: false
 
 options:
+  browser_locale: "en-US"
   tile_size: 32
   full_frame_tile_count: 4
   full_frame_area_threshold: 0.5
@@ -39,6 +40,7 @@ options:
   user_data_dir: "/pw-data"
 
 schema:
+  browser_locale: str
   tile_size: int
   full_frame_tile_count: int
   full_frame_area_threshold: float
