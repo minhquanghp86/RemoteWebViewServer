@@ -19,7 +19,6 @@ export type DeviceSession = {
   processor: FrameProcessor;
   selfTestRunner: SelfTestRunner;
 
-  // trailing throttle state
   pendingB64?: string;
   throttleTimer?: NodeJS.Timeout;
   lastProcessedMs?: number;
@@ -42,7 +41,7 @@ const KIOSK_KEYBOARD_SCRIPT = `(function(){
   const VKB_HEIGHT='196px';
   
   if(window.__kioskKeyboardInitialized){console.log('[VKB] Already initialized.');return;}
-  window.__kioskKeyboardInitialized=true;
+  window.__kioskKeyboardInitialized = true;
 
   let keyboardContainer = null;
   let currentLayout = 'default';
@@ -52,7 +51,7 @@ const KIOSK_KEYBOARD_SCRIPT = `(function(){
   const layouts = {
     default: [['q','w','e','r','t','y','u','i','o','p'],['a','s','d','f','g','h','j','k','l'],['⇧','z','x','c','v','b','n','m','⌫'],['▼','?123',',','◀','Space','▶','.','⏎']],
     shift:   [['Q','W','E','R','T','Y','U','I','O','P'],['A','S','D','F','G','H','J','K','L'],['⇧','Z','X','C','V','B','N','M','⌫'],['▼','?123',',','◀','Space','▶','.','⏎']],
-    symbols: [['1','2','3','4','5','6','7','8','9','0'],['@','#','$','%','&','*','-','+','(',')'],['ABC','!','"','\'',':',';','/','?','⌫'],['▼','=\\\\<',',','◀','Space','▶','.','⏎']],
+    symbols: [['1','2','3','4','5','6','7','8','9','0'],['@','#','$','%','&','*','-','+','(',')'],['ABC','!','"','\\'',';',':','/','?','⌫'],['▼','=\\\\<',',','◀','Space','▶','.','⏎']],
     extended:[['~','|','^','_','=','{','}','[',']','✓'],['<','>','£','€','¢','°','±','÷','×','\\\\'],['?123','↹','©','®','™','¿','¡','§','⌫'],['▼','ABC',',','◀','Space','▶','.','⏎']]
   };
 
@@ -61,26 +60,23 @@ const KIOSK_KEYBOARD_SCRIPT = `(function(){
     if(!document.getElementById('kiosk-vkb-style')){
       const style = document.createElement('style');
       style.id = 'kiosk-vkb-style';
-      style.textContent = \`
-        #kiosk-vkb-container{position:fixed !important;top:auto !important;bottom:-200vh !important;left:0 !important;right:0 !important;margin:0 auto !important;width:\${VKB_WIDTH} !important;height:\${VKB_HEIGHT} !important;container-type:size;background:#1e1e1e;border-top:2px solid #333;z-index:2147483647;display:flex;flex-direction:column;padding:4px;box-sizing:border-box;user-select:none;-webkit-user-select:none;font-family:'DejaVu Sans','Liberation Sans',Ubuntu,Roboto,sans-serif;touch-action:manipulation;border:none;transition:bottom 0.3s cubic-bezier(0.4,0,0.2,1) !important;}
-        #kiosk-vkb-container.vkb-visible{bottom:0 !important;}
-        .vkb-row{display:flex;justify-content:center;margin-bottom:4px;width:100%;gap:4px;flex:1;}
-        .vkb-row:last-child{margin-bottom:0;}
-        .vkb-key{flex:1;background:#383838;color:#f8f8f2;border:1px solid #2a2a2a;border-radius:2px;font-size:11.5cqh;font-weight:normal;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;}
-        .vkb-key:active{background:#555555;}
-        .vkb-key-layout{background:#324a5f;color:#e2e8f0;font-size:9cqh;}
-        .vkb-key-layout:active{background:#233544;}
-        .vkb-key-special{background:#485c4a;color:#e2e8f0;font-size:11cqh;}
-        .vkb-key-special:active{background:#364538;}
-        .vkb-key-large-icon{font-size:15cqh;}
-        .vkb-key-backspace{font-size:18cqh;}
-        .vkb-key-hide{background:#8b3a3a;color:#e2e8f0;font-size:12.5cqh;}
-        .vkb-key-hide:active{background:#6b2a2a;}
-        .vkb-key-enter{background:#E95420;color:#ffffff;border-color:#c94618;font-size:12.5cqh;}
-        .vkb-key-enter:active{background:#c94618;}
-        .vkb-key-space{flex:3;}
-        .vkb-key-arrow{flex:0.8;}
-      \`;
+      style.textContent = \`#kiosk-vkb-container{position:fixed !important;top:auto !important;bottom:-200vh !important;left:0 !important;right:0 !important;margin:0 auto !important;width:\${VKB_WIDTH} !important;height:\${VKB_HEIGHT} !important;container-type:size;background:#1e1e1e;border-top:2px solid #333;z-index:2147483647;display:flex;flex-direction:column;padding:4px;box-sizing:border-box;user-select:none;-webkit-user-select:none;font-family:'DejaVu Sans','Liberation Sans',Ubuntu,Roboto,sans-serif;touch-action:manipulation;border:none;transition:bottom 0.3s cubic-bezier(0.4,0,0.2,1) !important;}
+#kiosk-vkb-container.vkb-visible{bottom:0 !important;}
+.vkb-row{display:flex;justify-content:center;margin-bottom:4px;width:100%;gap:4px;flex:1;}.vkb-row:last-child{margin-bottom:0;}
+.vkb-key{flex:1;background:#383838;color:#f8f8f2;border:1px solid #2a2a2a;border-radius:2px;font-size:11.5cqh;font-weight:normal;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;}
+.vkb-key:active{background:#555555;}
+.vkb-key-layout{background:#324a5f;color:#e2e8f0;font-size:9cqh;}
+.vkb-key-layout:active{background:#233544;}
+.vkb-key-special{background:#485c4a;color:#e2e8f0;font-size:11cqh;}
+.vkb-key-special:active{background:#364538;}
+.vkb-key-large-icon{font-size:15cqh;}
+.vkb-key-backspace{font-size:18cqh;}
+.vkb-key-hide{background:#8b3a3a;color:#e2e8f0;font-size:12.5cqh;}
+.vkb-key-hide:active{background:#6b2a2a;}
+.vkb-key-enter{background:#E95420;color:#ffffff;border-color:#c94618;font-size:12.5cqh;}
+.vkb-key-enter:active{background:#c94618;}
+.vkb-key-space{flex:3;}
+.vkb-key-arrow{flex:0.8;}\`;
       document.head.appendChild(style);
     }
     if(!keyboardContainer){
@@ -115,7 +111,7 @@ const KIOSK_KEYBOARD_SCRIPT = `(function(){
         if(key==='Space') keyBtn.classList.add('vkb-key-space');
         if(key==='◀'||key==='▶') keyBtn.classList.add('vkb-key-arrow');
         if(key==='⏎') keyBtn.classList.add('vkb-key-enter');
-        if(key==='⇧' && isShifted){keyBtn.style.background='#e2e8f0';keyBtn.style.color='#121212';}
+        if(key==='⇧' && isShifted){ keyBtn.style.background='#e2e8f0'; keyBtn.style.color='#121212'; }
         rowDiv.appendChild(keyBtn);
       });
       keyboardContainer.appendChild(rowDiv);
@@ -145,7 +141,7 @@ const KIOSK_KEYBOARD_SCRIPT = `(function(){
       case 'ABC': currentLayout = 'default'; isShifted = false; renderKeyboard(); break;
       case '=\\\\<': currentLayout = 'extended'; isShifted = false; renderKeyboard(); break;
       case '↹': insertText('\\t'); break;
-      case '⌫': /* backspace logic */ 
+      case '⌫':
         if(activeInput.isContentEditable){
           document.execCommand('delete', false, null);
         } else {
@@ -162,9 +158,19 @@ const KIOSK_KEYBOARD_SCRIPT = `(function(){
         }
         break;
       case 'Space': insertText(' '); break;
-      case '◀': /* left arrow */ if(!activeInput.isContentEditable && activeInput.selectionStart > 0) activeInput.selectionStart = activeInput.selectionEnd = activeInput.selectionStart - 1; break;
-      case '▶': /* right arrow */ if(!activeInput.isContentEditable){ let end = activeInput.selectionEnd || 0; if(end < (activeInput.value||'').length) activeInput.selectionStart = activeInput.selectionEnd = end + 1; } break;
-      case '⏎': /* enter */ 
+      case '◀':
+        if(!activeInput.isContentEditable && activeInput.selectionStart > 0){
+          activeInput.selectionStart = activeInput.selectionEnd = activeInput.selectionStart - 1;
+        }
+        break;
+      case '▶':
+        if(!activeInput.isContentEditable){
+          let end = activeInput.selectionEnd || 0;
+          let len = (activeInput.value || '').length;
+          if(end < len) activeInput.selectionStart = activeInput.selectionEnd = end + 1;
+        }
+        break;
+      case '⏎':
         if(activeInput.tagName === 'TEXTAREA'){
           insertText('\\n');
         } else {
@@ -234,7 +240,6 @@ const KIOSK_KEYBOARD_SCRIPT = `(function(){
     }
   }
 
-  // === TRIGGER TỪ SERVER (quan trọng) ===
   window.__triggerVirtualKeyboardIfNeeded = function(){
     const el = document.activeElement;
     if(!el) return;
@@ -245,10 +250,8 @@ const KIOSK_KEYBOARD_SCRIPT = `(function(){
                          ['HA-TEXTFIELD','HA-SEARCH-INPUT','HA-CODE-EDITOR','HA-SELECTOR-TEXT'].includes(t);
 
     if(isValidInput){
-      console.log('[VKB] Server trigger → Show keyboard');
       showKeyboard(el);
     } else if(keyboardContainer && keyboardContainer.classList.contains('vkb-visible')){
-      console.log('[VKB] Server trigger → Hide keyboard');
       hideKeyboard();
     }
   };
@@ -259,20 +262,19 @@ const KIOSK_KEYBOARD_SCRIPT = `(function(){
   const interactionEvents = ['pointerdown','pointerup','mousedown','mouseup','click','touchstart','touchend'];
   interactionEvents.forEach(ev => {
     document.addEventListener(ev, function(e){
-      // ... (giữ nguyên logic ghost-click shield và key processing của bạn)
       if(window.__vkbClosingShield && (Date.now() - window.__vkbClosingShield < 400)){
         e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return;
       }
-      // Phần xử lý click trên bàn phím và hide khi click ngoài...
       if(keyboardContainer && keyboardContainer.classList.contains('vkb-visible')){
-        // logic xử lý touch trên keyboard (copy từ file gốc của bạn)
         let x = e.clientX, y = e.clientY;
-        if(x === undefined && e.changedTouches) { x = e.changedTouches[0].clientX; y = e.changedTouches[0].clientY; }
+        if(x === undefined && e.changedTouches && e.changedTouches.length > 0){
+          x = e.changedTouches[0].clientX;
+          y = e.changedTouches[0].clientY;
+        }
         if(x !== undefined && y !== undefined){
           const rect = keyboardContainer.getBoundingClientRect();
           if(y >= rect.top && y <= rect.bottom && x >= rect.left && x <= rect.right){
             e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
-            // Xử lý bấm phím...
             if(['pointerdown','touchstart','mousedown','click'].includes(ev)){
               const keys = keyboardContainer.querySelectorAll('.vkb-key');
               for(let k of keys){
