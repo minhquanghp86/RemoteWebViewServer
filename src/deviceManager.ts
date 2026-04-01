@@ -36,11 +36,10 @@ export const broadcaster = new DeviceBroadcaster();
 // On-screen keyboard script (FULL & FIXED)
 // ============================================
 const KIOSK_KEYBOARD_SCRIPT = `(function(){
-  console.log('[VKB] Script injected. Initializing...');
-  const VKB_WIDTH='100%';
-  const VKB_HEIGHT='196px';
+  console.log('[VKB] === SCRIPT EXECUTED SUCCESSFULLY ===');
   
-  if(window.__kioskKeyboardInitialized){console.log('[VKB] Already initialized.');return;}
+  const VKB_WIDTH='100%'; const VKB_HEIGHT='196px';
+  if(window.__kioskKeyboardInitialized) return;
   window.__kioskKeyboardInitialized = true;
 
   let keyboardContainer = null;
@@ -242,19 +241,14 @@ const KIOSK_KEYBOARD_SCRIPT = `(function(){
 
   window.__triggerVirtualKeyboardIfNeeded = function(){
     console.log('[VKB] Server trigger called');
-
     let el = document.activeElement;
-  
-    // Thử tìm input sâu hơn nếu activeElement không phải input
-    if (!el || el.tagName === 'BODY' || el.tagName === 'DIV') {
+    if(!el || el.tagName === 'BODY'){
       el = document.querySelector('input:focus, textarea:focus, [contenteditable="true"]:focus');
     }
-
     if(el){
-      console.log('[VKB] Found active element:', el.tagName, el.type || '');
+      console.log('[VKB] Showing keyboard for:', el.tagName);
       showKeyboard(el);
     } else {
-      console.log('[VKB] No active input found, hiding keyboard');
       hideKeyboard();
     }
   };
@@ -474,15 +468,27 @@ export async function ensureDeviceAsync(id: string, cfg: DeviceConfig): Promise<
 
   await session.send('Page.enable');
 
-  // ============================================
-  // BƯỚC 2: Inject virtual keyboard
-  // Script sẽ tự động chạy trên mọi trang được load
-  // ============================================
-  await session.send('Page.addScriptToEvaluateOnNewDocument', {
-    source: KIOSK_KEYBOARD_SCRIPT
-  });
-  console.log('[device] ✓ Virtual keyboard script registered');
+    // ============================================
+    // BƯỚC 2: Inject virtual keyboard (TỐI ƯU CHO ESPHOME)
+    // ============================================
+    await session.send('Page.addScriptToEvaluateOnNewDocument', {
+      source: KIOSK_KEYBOARD_SCRIPT
+    });
+    console.log('[device] ✓ Virtual keyboard script registered (New Document)');
 
+    // Inject lại khi page load xong (rất quan trọng với ESPHome)
+    session.on('Page.loadEventFired', async () => {
+      try {
+        await session.send('Runtime.evaluate', {
+          expression: KIOSK_KEYBOARD_SCRIPT,
+          returnByValue: false,
+          awaitPromise: false
+        });
+        console.log('[device] ✓ Keyboard re-injected on Page.loadEventFired');
+      } catch (e) {
+        console.warn('[device] Re-inject keyboard failed:', (e as Error).message);
+      }
+    });
   // ============================================
   // BƯỚC 3: Setup viewport ổn định
   // ============================================
