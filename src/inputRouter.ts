@@ -30,41 +30,48 @@ export class InputRouter {
 
   public async handleOpenURLPacketAsync(dev: DeviceSession, buf: Buffer): Promise<void> {
     const pkt = parseOpenURLPacket(buf);
-    if (!pkt) return;
+      if (!pkt) return;
 
-    if (pkt.url === "self-test") {
-      await dev.selfTestRunner.startAsync(dev.deviceId, dev.cdp);
-    } else {
-      dev.selfTestRunner.stop();
-
-      if (dev.url !== pkt.url)
-        await dev.cdp.send('Page.navigate', { url: pkt.url });
-    }
+      if (pkt.url === "self-test") {
+        await dev.selfTestRunner.startAsync(dev.deviceId, dev.cdp);
+      } else {
+        dev.selfTestRunner.stop();
+        
+        if (dev.url !== pkt.url)
+          await dev.cdp.send('Page.navigate', { url: pkt.url });
+      }
   }
 
   private async _dispatchTouchAsync(dev: DeviceSession, kind: TouchKind, x: number, y: number): Promise<void> {
     try {
-      const id = 1;
-      const rotated = mapPointForRotation(x, y, dev.cfg.width, dev.cfg.height, dev.cfg.rotation);
+      const id = 1; // single-finger id
+      const rotated = mapPointForRotation(
+        x, y,
+        dev.cfg.width, dev.cfg.height,
+        dev.cfg.rotation
+      );
       const points = [{ x: rotated.x, y: rotated.y, radiusX: 1, radiusY: 1, force: 1, id }];
 
       switch (kind) {
         case TouchKind.Down:
           await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: points });
           break;
+
         case TouchKind.Move:
           await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: points });
           break;
+
         case TouchKind.Up:
           await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
           break;
+
         case TouchKind.Tap:
           await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: points });
           await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
           break;
       }
     } catch (e) {
-      console.warn(`Failed to dispatch touch: ${(e as Error).message}`);
+      console.warn(`Failed to dispatch touch event: ${(e as Error).message}`);
     }
   }
 }
