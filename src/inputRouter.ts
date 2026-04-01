@@ -30,46 +30,86 @@ export class InputRouter {
 
   public async handleOpenURLPacketAsync(dev: DeviceSession, buf: Buffer): Promise<void> {
     const pkt = parseOpenURLPacket(buf);
-      if (!pkt) return;
+    if (!pkt) return;
 
-      if (pkt.url === "self-test") {
-        await dev.selfTestRunner.startAsync(dev.deviceId, dev.cdp);
-      } else {
-        dev.selfTestRunner.stop();
-        
-        if (dev.url !== pkt.url)
-          await dev.cdp.send('Page.navigate', { url: pkt.url });
-      }
+    if (pkt.url === "self-test") {
+      await dev.selfTestRunner.startAsync(dev.deviceId, dev.cdp);
+    } else {
+      dev.selfTestRunner.stop();
+      
+      if (dev.url !== pkt.url)
+        await dev.cdp.send('Page.navigate', { url: pkt.url });
+    }
   }
 
-  private async _dispatchTouchAsync(dev: DeviceSession, kind: TouchKind, x: number, y: number): Promise<void> {
+  private async _dispatchTouchAsync(
+    dev: DeviceSession, 
+    kind: TouchKind, 
+    x: number, 
+    y: number
+  ): Promise<void> {
     try {
       const id = 1; // single-finger id
       const rotated = mapPointForRotation(
         x, y,
-        dev.cfg.width, dev.cfg.height,
+        dev.cfg.width, 
+        dev.cfg.height,
         dev.cfg.rotation
       );
       const points = [{ x: rotated.x, y: rotated.y, radiusX: 1, radiusY: 1, force: 1, id }];
 
       switch (kind) {
         case TouchKind.Down:
-          await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: points });
+          await dev.cdp.send('Input.dispatchTouchEvent', { 
+            type: 'touchStart', 
+            touchPoints: points 
+          });
           break;
 
         case TouchKind.Move:
-          await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: points });
+          await dev.cdp.send('Input.dispatchTouchEvent', { 
+            type: 'touchMove', 
+            touchPoints: points 
+          });
           break;
 
         case TouchKind.Up:
-          await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+          await dev.cdp.send('Input.dispatchTouchEvent', { 
+            type: 'touchEnd', 
+            touchPoints: [] 
+          });
           break;
 
         case TouchKind.Tap:
-          await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: points });
-          await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+          await dev.cdp.send('Input.dispatchTouchEvent', { 
+            type: 'touchStart', 
+            touchPoints: points 
+          });
+          await dev.cdp.send('Input.dispatchTouchEvent', { 
+            type: 'touchEnd', 
+            touchPoints: [] 
+          });
           break;
       }
+
+      // ====================== VIRTUAL KEYBOARD TRIGGER ======================
+      // Chỉ trigger sau Tap hoặc Up (khi focus đã được thiết lập)
+      if (kind === TouchKind.Tap || kind === TouchKind.Up) {
+        try {
+          // Đợi browser kịp cập nhật activeElement
+          await new Promise(resolve => setTimeout(resolve, 35));
+
+          await dev.cdp.send('Runtime.evaluate', {
+            expression: `window.__triggerVirtualKeyboardIfNeeded && window.__triggerVirtualKeyboardIfNeeded()`,
+            returnByValue: false,
+            awaitPromise: false
+          });
+        } catch (triggerError) {
+          console.warn(`[VKB] Failed to trigger virtual keyboard: ${(triggerError as Error).message}`);
+        }
+      }
+      // =====================================================================
+
     } catch (e) {
       console.warn(`Failed to dispatch touch event: ${(e as Error).message}`);
     }
