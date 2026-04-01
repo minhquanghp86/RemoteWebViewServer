@@ -241,17 +241,20 @@ const KIOSK_KEYBOARD_SCRIPT = `(function(){
   }
 
   window.__triggerVirtualKeyboardIfNeeded = function(){
-    const el = document.activeElement;
-    if(!el) return;
-    const t = el.tagName.toUpperCase();
-    const isValidInput = (t==='INPUT' && validTypes.includes(el.type||'')) ||
-                         t==='TEXTAREA' || el.isContentEditable ||
-                         (el.classList && el.classList.contains('cm-content')) ||
-                         ['HA-TEXTFIELD','HA-SEARCH-INPUT','HA-CODE-EDITOR','HA-SELECTOR-TEXT'].includes(t);
+    console.log('[VKB] Server trigger called');
 
-    if(isValidInput){
+    let el = document.activeElement;
+  
+    // Thử tìm input sâu hơn nếu activeElement không phải input
+    if (!el || el.tagName === 'BODY' || el.tagName === 'DIV') {
+      el = document.querySelector('input:focus, textarea:focus, [contenteditable="true"]:focus');
+    }
+
+    if(el){
+      console.log('[VKB] Found active element:', el.tagName, el.type || '');
       showKeyboard(el);
-    } else if(keyboardContainer && keyboardContainer.classList.contains('vkb-visible')){
+    } else {
+      console.log('[VKB] No active input found, hiding keyboard');
       hideKeyboard();
     }
   };
