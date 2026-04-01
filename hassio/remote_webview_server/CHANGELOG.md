@@ -1,1 +1,2 @@
-Thêm hỗ trợ bàn phím
+V2.0 Sửa chữa việc thêm hỗ trợ bàn phím
+Fix lỗi
