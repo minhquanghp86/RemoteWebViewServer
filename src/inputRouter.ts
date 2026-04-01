@@ -43,40 +43,44 @@ export class InputRouter {
   }
 
   private async _dispatchTouchAsync(dev: DeviceSession, kind: TouchKind, x: number, y: number): Promise<void> {
-    try {
-      const id = 1;
-      const rotated = mapPointForRotation(x, y, dev.cfg.width, dev.cfg.height, dev.cfg.rotation);
-      const points = [{ x: rotated.x, y: rotated.y, radiusX: 1, radiusY: 1, force: 1, id }];
+  try {
+    const id = 1;
+    const rotated = mapPointForRotation(x, y, dev.cfg.width, dev.cfg.height, dev.cfg.rotation);
+    const points = [{ x: rotated.x, y: rotated.y, radiusX: 1, radiusY: 1, force: 1, id }];
 
-      switch (kind) {
-        case TouchKind.Down:
-          await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: points });
-          break;
-        case TouchKind.Move:
-          await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: points });
-          break;
-        case TouchKind.Up:
-          await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-          break;
-        case TouchKind.Tap:
-          await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: points });
-          await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-          break;
-      }
-
-      // === TRIGGER BÀN PHÍM MẠNH HƠN ===
-      if (kind === TouchKind.Tap || kind === TouchKind.Up) {
-        await new Promise(r => setTimeout(r, 80));   // tăng delay lên 80ms
-
-        await dev.cdp.send('Runtime.evaluate', {
-          expression: `
-            window.__triggerVirtualKeyboardIfNeeded && window.__triggerVirtualKeyboardIfNeeded();
-            console.log('[VKB] Trigger called from server');
-          `,
-          returnByValue: false
-        }).catch(e => console.warn('[VKB] Trigger error:', e.message));
-      }
-    } catch (e) {
-      console.warn(`Failed to dispatch touch: ${(e as Error).message}`);
+    switch (kind) {
+      case TouchKind.Down:
+        await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: points });
+        break;
+      case TouchKind.Move:
+        await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: points });
+        break;
+      case TouchKind.Up:
+        await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+        break;
+      case TouchKind.Tap:
+        await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: points });
+        await dev.cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+        break;
     }
+
+    // TRIGGER BÀN PHÍM CHO ESPHOME
+    if (kind === TouchKind.Tap || kind === TouchKind.Up) {
+      await new Promise(r => setTimeout(r, 150)); // delay quan trọng
+
+      await dev.cdp.send('Runtime.evaluate', {
+        expression: `
+          console.log('[VKB] Server trigger fired');
+          if (typeof window.__triggerVirtualKeyboardIfNeeded === 'function') {
+            window.__triggerVirtualKeyboardIfNeeded();
+          } else {
+            console.error('[VKB] Trigger function not found!');
+          }
+        `,
+        returnByValue: false
+      }).catch(e => console.warn('[VKB] Trigger error:', e.message));
+    }
+  } catch (e) {
+    console.warn(`Failed to dispatch touch: ${(e as Error).message}`);
   }
+}
