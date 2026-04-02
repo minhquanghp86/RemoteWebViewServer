@@ -1,7 +1,7 @@
 services:
   rwvserver:
     #build: ./RemoteWebViewServer
-    build: https://github.com/SleepinDevil/RemoteWebViewServer.git
+    build: https://github.com/minhquanghp86/RemoteWebViewServer.git
     image: remote-webview-server:latest
     container_name: remote-webview-server
     restart: unless-stopped
