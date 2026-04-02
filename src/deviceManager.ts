@@ -49,6 +49,14 @@ const KIOSK_KEYBOARD_SCRIPT = `(function(){
   var isShifted        = false;
   var isVietnamese     = false;
   var telexWord        = '';
+  var commitOnEnterOnly = true;
+
+  function commitInput(){
+    if(!activeInput) return;
+    activeInput.dispatchEvent(new Event('input',{bubbles:true,composed:true}));
+    activeInput.dispatchEvent(new Event('change',{bubbles:true,composed:true}));
+    console.log('[VKB] Commit input');
+  }
 
   var layouts = {
     default: [
@@ -326,20 +334,25 @@ const KIOSK_KEYBOARD_SCRIPT = `(function(){
 
       case '\\u23CE':
         if(activeInput.isContentEditable){
-          document.execCommand('insertParagraph',false,null);
-          activeInput.dispatchEvent(new Event('input',{bubbles:true,composed:true}));
+      document.execCommand('insertParagraph',false,null);
+        activeInput.dispatchEvent(new Event('input',{bubbles:true,composed:true}));
         } else if(activeInput.tagName==='TEXTAREA'){
           insertText('\\n');
-          activeInput.dispatchEvent(new Event('input',{bubbles:true,composed:true}));
-          activeInput.dispatchEvent(new Event('change',{bubbles:true,composed:true}));
         } else {
           var ev={key:'Enter',code:'Enter',keyCode:13,which:13,bubbles:true,composed:true,cancelable:true};
           activeInput.dispatchEvent(new KeyboardEvent('keydown',ev));
           activeInput.dispatchEvent(new KeyboardEvent('keypress',ev));
           activeInput.dispatchEvent(new KeyboardEvent('keyup',ev));
-          hideKeyboard();
         }
-        resetTelex(); break;
+
+        // ✅ CHỈ COMMIT Ở ĐÂY
+        if (commitOnEnterOnly) {
+          commitInput();
+        }
+
+        hideKeyboard();
+        resetTelex();
+        break;
 
       default:
         if(!key) break;
@@ -357,7 +370,8 @@ const KIOSK_KEYBOARD_SCRIPT = `(function(){
         break;
     }
 
-    if(key!=='\\u23CE'&&key!=='\\u25BC'){
+    // ❌ KHÔNG gửi event mỗi phím nữa
+    if (!commitOnEnterOnly && key!=='\\u23CE'&&key!=='\\u25BC'){
       activeInput.dispatchEvent(new Event('input',{bubbles:true,composed:true}));
       activeInput.dispatchEvent(new Event('change',{bubbles:true,composed:true}));
     }
