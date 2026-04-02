@@ -165,20 +165,7 @@ export async function ensureDeviceAsync(id: string, cfg: DeviceConfig): Promise<
     }
   });
 
-  // Function to deal with URL changing via either full page refresh or single page # follow
-  const handleNavigation = (url: string) => {
-    if (newDevice.url !== url) {
-      newDevice.url = url;
-      broadcaster.sendCurrentURL(newDevice.deviceId, url);
-      console.log(`[device] URL changed to: ${url}`);
-    }
-  };
-  // Triggered on full page loads
-  session.on('Page.frameNavigated', (evt: any) => {
-    if (!evt.frame.parentId) { // Only track the main frame, ignore iframes
-      handleNavigation(evt.frame.url);
-    }
-  });
+  
   // Triggered on Single Page App (SPA) hash or history API changes
   session.on('Page.navigatedWithinDocument', (evt: any) => {
     handleNavigation(evt.url);
