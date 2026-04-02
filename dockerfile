@@ -1,5 +1,5 @@
 # Build từ Playwright image có Chrome
-FROM mcr.microsoft.com/playwright:v1.48.0-jammy AS base
+FROM mcr.microsoft.com/playwright:v1.55.0-jammy AS base
 
 # Cài đặt Google Chrome stable (có H.264 codec)
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome-keyring.gpg \
@@ -44,7 +44,7 @@ COPY src ./src
 RUN npm run build
 
 # Production stage
-FROM mcr.microsoft.com/playwright:v1.48.0-jammy
+FROM mcr.microsoft.com/playwright:v1.55.0-jammy
 
 # Cài Chrome lại ở production stage
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome-keyring.gpg \
