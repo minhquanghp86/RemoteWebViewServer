@@ -165,12 +165,6 @@ export async function ensureDeviceAsync(id: string, cfg: DeviceConfig): Promise<
     }
   });
 
-  
-  // Triggered on Single Page App (SPA) hash or history API changes
-  session.on('Page.navigatedWithinDocument', (evt: any) => {
-    handleNavigation(evt.url);
-  });
-  
   return newDevice;
 }
 
