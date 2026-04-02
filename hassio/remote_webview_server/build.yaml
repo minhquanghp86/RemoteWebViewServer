@@ -1,0 +1,3 @@
+build_from:
+  amd64: "ghcr.io/minhquanghp86/remote-webview-server:latest"
+  aarch64: "ghcr.io/minhquanghp86/remote-webview-server:latest"
